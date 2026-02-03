@@ -88,6 +88,47 @@ jobs:
         echo "- ✅ API health check passed" >> AgentTaskHub/progress.md
         echo "- ✅ Database tables verified" >> AgentTaskHub/progress.md
 
+    - name: Add Task for Clawdbot
+      run: |
+        echo "🤖 Adding task to queue for Clawdbot..."
+        python -c "
+import json
+from datetime import datetime
+
+task = {
+    'timestamp': datetime.now().isoformat(),
+    'source': 'GitHub Actions',
+    'task': 'Continue autonomous development on AgentTaskHub',
+    'instructions': '''
+Review the current project status and continue with the next task:
+
+1. Check AGENT_TASKS.md for pending tasks
+2. Test API endpoints (POST /agents/, POST /tasks/, etc.)
+3. Improve code coverage
+4. Add new features if testing is complete
+
+Use exec tool with python cat_file.py to read files when needed.
+''',
+    'priority': 'normal'
+}
+
+try:
+    with open('task_queue.json', 'r') as f:
+        queue = json.load(f)
+except:
+    queue = {'pending_tasks': []}
+
+queue['pending_tasks'].append(task)
+queue['last_updated'] = datetime.now().isoformat()
+queue['status'] = 'tasks_pending'
+
+with open('task_queue.json', 'w') as f:
+    json.dump(queue, f, indent=2)
+
+print('Task added to queue successfully!')
+print('Clawdbot will pick this up on next check.')
+"
+
     - name: Commit and Push Changes
       run: |
         git config user.name "github-actions[bot]"
