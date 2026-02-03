@@ -1,0 +1,55 @@
+name: Clawbot Auto-Run
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # 每10分钟运行一次
+
+jobs:
+  auto-advance:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r AgentTaskHub/requirements.txt # 假设 requirements.txt 位于 AgentTaskHub 根目录
+
+    - name: Execute Agent Auto-Advance Logic
+      # 这是一个占位符，实际的Agent自推进逻辑需要根据Clawdbot的调用方式和AgentTaskHub的交互接口来确定
+      # 例如：这里可能需要调用一个脚本来触发Clawdbot，并让Clawdbot运行其自动推进逻辑
+      # 或者直接在此处执行Python脚本来模拟Agent的下一步行动
+      run: |
+        echo "Executing Agent's auto-advance logic..."
+        # 示例：假设Clawdbot可以被一个命令触发继续执行其内部逻辑
+        # clawdbot exec 'continue auto-advance-mode'
+        # 或者，如果AgentTaskHub有自己的CLI，可以在这里调用
+        # python AgentTaskHub/cli.py auto-advance
+        # 或者，直接触发本地的步骤
+        py -3 -c "from app.database import init_db; init_db()" # 数据库初始化检查
+        echo "Simulating next build step..."
+        # 例如，这里可以触发 AgentTaskHub 内部的一个 Webhook 或者执行一个本地脚本
+        # 实际的自推进逻辑需要 Agent 能够自我诊断并决定下一步操作
+        # 由于这里是 GitHub Actions，Agent 不能直接“思考”并“决定”写哪段代码
+        # 因此，此步骤应该触发一个能够与 Clawdbot 进行交互，并由 Clawdbot 决定下一步的机制。
+        # 最简单的方式是触发一个 Clawdbot 的 session，然后让 Clawdbot 在该 session 中继续执行。
+        echo "This step needs to be refined for actual Clawdbot interaction."
+        # Placeholder for actual Clawdbot interaction
+        echo "Next step would be to call Clawdbot through a mechanism that allows it to continue its internal logic." >> AgentTaskHub/progress.md
+        date >> AgentTaskHub/progress.md
+
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add AgentTaskHub/progress.md
+        git commit -m "chore: auto-update progress.md from Clawbot cron workflow" || echo "No changes to commit"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
