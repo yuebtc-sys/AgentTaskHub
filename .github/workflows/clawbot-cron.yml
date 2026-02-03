@@ -1,6 +1,7 @@
 name: Clawbot Auto-Run
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '*/10 * * * *' # 每10分钟运行一次
 
