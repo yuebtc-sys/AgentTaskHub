@@ -13,3 +13,7 @@
 
 ## 下一步：
 等待GitHub Actions自动运行，或通过GitHub网页手动触发workflow来测试。
+
+## 已修复的问题（2026-02-03 02:57）：
+✅ 修复了GitHub Actions权限问题（添加了 `permissions: contents: write`）
+现在workflow可以正常推送progress.md更新了！
