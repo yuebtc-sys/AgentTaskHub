@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+SQLAlchemy
+web3
+pydantic_settings # For environment variable management
