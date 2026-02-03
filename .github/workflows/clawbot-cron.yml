@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r AgentTaskHub/requirements.txt # 假设 requirements.txt 位于 AgentTaskHub 根目录
+        pip install -r requirements.txt # 假设 requirements.txt 位于 AgentTaskHub 根目录
 
     - name: Execute Agent Auto-Advance Logic
       # 这是一个占位符，实际的Agent自推进逻辑需要根据Clawdbot的调用方式和AgentTaskHub的交互接口来确定
