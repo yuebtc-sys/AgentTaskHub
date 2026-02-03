@@ -33,7 +33,7 @@ jobs:
         # 或者，如果AgentTaskHub有自己的CLI，可以在这里调用
         # python AgentTaskHub/cli.py auto-advance
         # 或者，直接触发本地的步骤
-        py -3 -c "from app.database import init_db; init_db()" # 数据库初始化检查
+        python -c "from app.database import init_db; init_db()"  # 数据库初始化检查
         echo "Simulating next build step..."
         # 例如，这里可以触发 AgentTaskHub 内部的一个 Webhook 或者执行一个本地脚本
         # 实际的自推进逻辑需要 Agent 能够自我诊断并决定下一步操作
