@@ -1,3 +1,2 @@
 
-
-恢复路径：fetch-first → fetch → merge unrelated histories → push
+阻塞原因：gh CLI 未安装或未认证，无法验证 GitHub Actions 运行状态。
