@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '*/10 * * * *' # 每10分钟运行一次
+
+permissions:
+  contents: write
+
 jobs:
   auto-advance:
     runs-on: ubuntu-latest
