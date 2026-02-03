@@ -89,58 +89,6 @@ task = {
     'source': 'GitHub Actions',
     'task': 'Continue autonomous development on AgentTaskHub',
     'instructions': '''
-GitHub Actions is reminding you to continue working on AgentTaskHub!
-
-Please do the following:
-
-1. READ: C:/Users/yueyo/clawd/CLAWDBOT_AUTO_WORK.md immediately!
-   exec: { "command": "python C:/Users/yueyo/clawd/cat_file.py C:/Users/yueyo/clawd/CLAWDBOT_AUTO_WORK.md", "workdir": "C:/Users/yueyo/clawd" }
-
-2. Continue with API endpoint testing:
-   - Read main.py
-   - Test POST /agents/
-   - Test POST /tasks/
-   - Test POST /tasks/{id}/claim
-
-3. Write tests
-4. Improve code
-5. Add new features
-
-IMPORTANT: Keep working autonomously until the project is complete!
-DO NOT WAIT for user instructions!
-''',
-    'priority': 'high'
-}
-
-try:
-    with open('task_queue.json', 'r') as f:
-        queue = json.load(f)
-except:
-    queue = {'pending_tasks': []}
-
-queue['pending_tasks'].append(task)
-queue['last_updated'] = datetime.now().isoformat()
-queue['status'] = 'tasks_pending'
-
-with open('task_queue.json', 'w') as f:
-    json.dump(queue, f, indent=2)
-
-print('Task added to queue successfully!')
-print('Clawdbot will pick this up on next check.')
-"
-
-    - name: Add Task for Clawdbot
-      run: |
-        echo "🤖 Adding task to queue for Clawdbot..."
-        python -c "
-import json
-from datetime import datetime
-
-task = {
-    'timestamp': datetime.now().isoformat(),
-    'source': 'GitHub Actions',
-    'task': 'Continue autonomous development on AgentTaskHub',
-    'instructions': '''
 Review the current project status and continue with the next task:
 
 1. Check AGENT_TASKS.md for pending tasks
@@ -169,6 +117,74 @@ with open('task_queue.json', 'w') as f:
 print('Task added to queue successfully!')
 print('Clawdbot will pick this up on next check.')
 "
+
+    - name: Notify Clawdbot via Telegram
+      run: |
+        echo "📢 Sending notification to Clawdbot via Telegram..."
+        python -c "
+import requests
+import json
+from datetime import datetime
+
+# Telegram Bot Configuration
+TELEGRAM_BOT_TOKEN = '8565919106:AAGDoAI6pT3hj8UG_TQaZiDd1fd3JRYZTuM'
+
+# Get recent updates to find chat ID
+try:
+    updates_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates'
+    response = requests.get(updates_url)
+    data = response.json()
+
+    if data.get('ok') and data.get('result'):
+        # Get the most recent chat ID
+        last_update = data['result'][-1]
+        chat_id = last_update['message']['chat']['id']
+
+        # Send notification message
+        message = f'''🔔 **GitHub Actions 任务提醒**
+
+⏰ 时间: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")} UTC
+📝 来源: GitHub Actions Cron Workflow
+
+🚀 **立即执行以下步骤：**
+
+1. 读取 IDENTITY.md
+   exec: {{ \"command\": \"python C:/Users/yueyo/clawd/cat_file.py C:/Users/yueyo/clawd/IDENTITY.md\", \"workdir\": \"C:/Users/yueyo/clawd\" }}
+
+2. 检查任务队列
+   exec: {{ \"command\": \"python C:/Users/yueyo/clawd/cat_file.py C:/Users/yueyo/clawd/AgentTaskHub/task_queue.json\", \"workdir\": \"C:/Users/yueyo/clawd\" }}
+
+3. 执行 AUTOPILOT_MODE.md 中的指令
+   - 自主工作
+   - 遇到错误自动恢复
+   - 持续推进项目
+
+⚠️ **不要等待用户指令！立即开始工作！**
+
+*Let's build something amazing! 🦞*'''
+
+        send_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+        payload = {
+            'chat_id': chat_id,
+            'text': message,
+            'parse_mode': 'Markdown'
+        }
+
+        send_response = requests.post(send_url, json=payload)
+        result = send_response.json()
+
+        if result.get('ok'):
+            print('✅ Notification sent to Clawdbot successfully!')
+            print(f'📱 Chat ID: {chat_id}')
+        else:
+            print(f'❌ Failed to send notification: {result}')
+    else:
+        print('❌ No Telegram updates found. Please send a message to the bot first.')
+
+except Exception as e:
+    print(f'❌ Error: {e}')
+"
+
 
     - name: Commit and Push Changes
       run: |
